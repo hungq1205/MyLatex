@@ -1,17 +1,20 @@
 using System.Text;
 using TMPro;
+using UnityEngine;
 
 namespace Latex
 {
     public interface IExpression
     {
-        string Content { get; }
+        IExpression[] Content { get; }
+        bool Isolated { get; }
+        Vector2 TopLeft { get; }
+        Vector2 BottomRight { get; }
 
-        /// <summary>
-        /// Build expression text (add notions, symbols or shapes)
-        /// </summary>
-        /// <returns>Number of added character index</returns>
         void Build(StringBuilder sb);
-        void Render(TMP_TextInfo tInfo);
+        void Render(Latex latex);
+        void Transform(Latex latex, float scale);
+        void Transform(Latex latex, float scale, Vector2 offset);
+        void UpdateBound(Latex latex);
     }
 }

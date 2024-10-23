@@ -8,10 +8,16 @@ namespace Latex
     public class Latex : MonoBehaviour
     {
         public TextMeshProUGUI tmp;
+        public float spacing = 0.3f;
+        public float scaler = 0.1f;
+        public bool update = true;
         [TextArea(5, 1000)] public string content;
+
+        [HideInInspector] public TMP_TextInfo tInfo;
 
         void Start()
         {
+            tInfo = tmp.textInfo;
             Refresh();
         }
 
@@ -19,10 +25,10 @@ namespace Latex
         void Update()
         {
             count -= Time.deltaTime;
-            if (count <= 0)
+            if (update && count <= 0)
             {
                 count = 1f;
-                //Refresh();
+                Refresh();
             }
         }
 
@@ -36,7 +42,7 @@ namespace Latex
             sb.Clear();
             tmp.ForceMeshUpdate();
 
-            ep.Render(tmp.textInfo);
+            ep.Render(this);
 
             tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
         }

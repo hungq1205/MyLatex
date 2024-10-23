@@ -1,4 +1,4 @@
-using System.Text;
+using UnityEngine;
 using TMPro;
 
 namespace Latex
@@ -7,22 +7,23 @@ namespace Latex
     {
         const char SqrtChar = '\u221A';
 
-        public SquareRoot(string content) : base(content) { }
-
-        public override void Build(StringBuilder sb)
+        public SquareRoot(IExpression content, bool isolated = false) : base(isolated)
         {
-            StartChar = sb.Length;
-            sb.Append(SqrtChar);
-            sb.Append(Content);
-            Length = sb.Length - StartChar;
+            Content = new[] { content };
         }
 
-        public override void Render(TMP_TextInfo tInfo)
+        public SquareRoot(string content) : base()
         {
-            base.Render(tInfo);
+            Content = new IExpression[] { 
+                new CharExpression(SqrtChar),
+                new TextExpression(content),
+            };
+        }
 
-            ITransform scaler = new Scale(0.85f);
-            scaler.Perform(tInfo, StartChar + 1, Length - 1);
+        public override void Render(Latex latex)
+        {
+            Content[1].Transform(latex, 1 + latex.scaler);
+            //Content[1].Transform(latex, 1 - latex.scaler);
         }
     }
 }
