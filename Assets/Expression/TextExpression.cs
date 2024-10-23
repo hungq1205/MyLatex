@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using TMPro;
 
@@ -7,7 +8,7 @@ namespace Latex
     {
         public string value;
 
-        public TextExpression(string content, bool isolated = false) : base(isolated)
+        public TextExpression(string content) : base()
         {
             value = content;
         }
@@ -21,8 +22,13 @@ namespace Latex
 
         public override void UpdateBound(Latex latex)
         {
-            topLeft = latex.tInfo.characterInfo[StartChar].topLeft;
-            bottomRight = latex.tInfo.characterInfo[StartChar + Length - 1].bottomRight;
+            int vertIdx = latex.tInfo.characterInfo[StartChar].vertexIndex;
+            var vertices = latex.tInfo.meshInfo[latex.tInfo.characterInfo[StartChar].materialReferenceIndex].vertices;
+            topLeft = vertices[vertIdx + 1];
+
+            vertIdx = latex.tInfo.characterInfo[StartChar + Length - 1].vertexIndex;
+            vertices = latex.tInfo.meshInfo[latex.tInfo.characterInfo[StartChar + Length - 1].materialReferenceIndex].vertices;
+            bottomRight = vertices[vertIdx + 3];
         }
     }
 }

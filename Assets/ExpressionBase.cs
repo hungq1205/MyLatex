@@ -8,7 +8,6 @@ namespace Latex
     public abstract class ExpressionBase : IExpression
     {
         public IExpression[] Content { get; protected set; }
-        public bool Isolated { get; private set; }
         public int StartChar { get; protected set; }
         public int Length { get; protected set; }
 
@@ -18,10 +17,7 @@ namespace Latex
         protected Vector2 bottomRight;
         public Vector2 BottomRight => bottomRight;
 
-        public ExpressionBase(bool isolated = false) 
-        {
-            Isolated = isolated;
-        }
+        public ExpressionBase() { }
 
         public virtual void Build(StringBuilder sb)
         {
@@ -31,48 +27,44 @@ namespace Latex
             Length = sb.Length - StartChar;
         }
 
-        public virtual void Render(Latex latex)
+        public virtual void Render(Latex latex, IExpression preceeding = null)
         {
             if (StartChar < 0 || Length < 0)
                 throw new System.Exception("Expression has not been built");
-        }
-
-        public virtual void Transform(Latex latex, float scale)
-        {
-            if (Content != null)
-            {
-                Vector2 anchor = new(Content[0].TopLeft.x, Content[0].BottomRight.y);
-                for (int i = 0; i < Content.Length; i++)
-                {
-                    Content[i].Transform(latex, scale, anchor);
-                    if (!Isolated)
-                    {
-                        anchor = Content[i].BottomRight;
-                        anchor.x += latex.spacing;
-                    }
-                }
-            }
-            else
-                Transform(latex, scale, StartChar, Length);
             UpdateBound(latex);
         }
 
-        public virtual void Transform(Latex latex, float scale, Vector2 anchor)
+        public virtual void Transform(Latex latex, float scale, IExpression preceeding = null)
+        {
+            if (Content != null)
+            {
+                preceeding ??= Content[0];
+                Vector2 anchor = preceeding.BottomLeft;
+                for (int i = 0; i < Content.Length; i++)
+                {
+                    Content[i].Transform(latex, scale, anchor);
+                    anchor = Content[i].BottomRight;
+                }
+            }
+            else if (preceeding == null)
+                Transform(latex, scale, StartChar, Length);
+            else
+                Transform(latex, scale, StartChar, Length, preceeding.BottomRight);
+            UpdateBound(latex);
+        }
+
+        public virtual void Transform(Latex latex, float scale, Vector2 pos, float anchorCoef = 0f)
         {
             if (Content != null)
             {
                 for (int i = 0; i < Content.Length; i++)
                 {
-                    Content[i].Transform(latex, scale, anchor);
-                    if (!Isolated)
-                    {
-                        anchor = Content[i].BottomRight;
-                        anchor.x += latex.spacing;
-                    }
+                    Content[i].Transform(latex, scale, pos, anchorCoef);
+                    pos = Content[i].BottomRight;
                 }
             }
             else
-                Transform(latex, scale, StartChar, Length, anchor);
+                Transform(latex, scale, StartChar, Length, pos, anchorCoef);
             UpdateBound(latex);
         }
 
@@ -90,31 +82,40 @@ namespace Latex
                 vertIdx = cInfo.vertexIndex;
                 vertices = tInfo.meshInfo[cInfo.materialReferenceIndex].vertices;
 
+                var temp = vertices[vertIdx + 3].x - vertices[vertIdx + 1].x;
                 for (int i = 0; i < 4; i++)
-                    vertices[vertIdx + i] = (vertices[vertIdx + i] - cInfo.bottomLeft) * scale + anc;
-                anc = cInfo.bottomRight;
-                anc.x += latex.spacing;
+                    vertices[vertIdx + i] = (vertices[vertIdx + i] - vertices[vertIdx]) * scale + anc;
+                anc.x += (temp + latex.characterSpacing) * scale;
             }
         }
 
-        static void Transform(Latex latex, float scale, int startChar, int length, Vector2 anchor)
+        static void Transform(Latex latex, float scale, int startChar, int length, Vector2 pos, float anchorCoef = 0f)
         {
             TMP_TextInfo tInfo = latex.tInfo;
-            TMP_CharacterInfo cInfo;
-            Vector3 anc = new(anchor.x, anchor.y);
-            Vector3[] vertices;
-            int vertIdx;
+            var cInfo = tInfo.characterInfo[startChar];
+            var vertIdx = cInfo.vertexIndex;
+            var vertices = tInfo.meshInfo[cInfo.materialReferenceIndex].vertices;
+            var pos3 = new Vector3(pos.x, pos.y - (vertices[vertIdx + 1].y - vertices[vertIdx + 3].y) * scale * anchorCoef);
 
-            for (int c = startChar; c < startChar + length; c++)
+            var offset = vertices[vertIdx + 3].x - vertices[vertIdx + 1].x;
+            var oldAnchor = vertices[vertIdx];
+            oldAnchor.y += (vertices[vertIdx + 1].y - vertices[vertIdx + 3].y) * anchorCoef;
+            for (int i = 0; i < 4; i++)
+                vertices[vertIdx + i] = (vertices[vertIdx + i] - oldAnchor) * scale + pos3;
+            pos3.x += (offset + latex.characterSpacing) * scale;
+            
+            for (int c = startChar + 1; c < startChar + length; c++)
             {
                 cInfo = tInfo.characterInfo[c];
                 vertIdx = cInfo.vertexIndex;
                 vertices = tInfo.meshInfo[cInfo.materialReferenceIndex].vertices;
 
+                offset = vertices[vertIdx + 3].x - vertices[vertIdx + 1].x;
+                oldAnchor = vertices[vertIdx];
+                oldAnchor.y += (vertices[vertIdx + 1].y - vertices[vertIdx + 3].y) * anchorCoef;
                 for (int i = 0; i < 4; i++)
-                    vertices[vertIdx + i] = (vertices[vertIdx + i] - cInfo.bottomLeft) * scale + anc;
-                anc = cInfo.bottomRight;
-                anc.x += latex.spacing;
+                    vertices[vertIdx + i] = (vertices[vertIdx + i] - oldAnchor) * scale + pos3;
+                pos3.x += (offset + latex.characterSpacing) * scale;
             }
         }
 

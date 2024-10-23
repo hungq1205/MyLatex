@@ -1,4 +1,6 @@
 using System.Text;
+using UnityEditor.PackageManager;
+using UnityEngine;
 
 namespace Latex
 {
@@ -6,7 +8,7 @@ namespace Latex
     {
         public char value;
 
-        public CharExpression(char content, bool isolated = false) : base(isolated)
+        public CharExpression(char content) : base()
         {
             value = content;
         }
@@ -20,8 +22,11 @@ namespace Latex
 
         public override void UpdateBound(Latex latex)
         {
-            topLeft = latex.tInfo.characterInfo[StartChar].topLeft;
-            bottomRight = latex.tInfo.characterInfo[StartChar].bottomRight;
+            int vertIdx = latex.tInfo.characterInfo[StartChar].vertexIndex;
+            var vertices = latex.tInfo.meshInfo[latex.tInfo.characterInfo[StartChar].materialReferenceIndex].vertices;
+
+            topLeft = vertices[vertIdx + 1];
+            bottomRight = vertices[vertIdx + 3];
         }
     }
 }

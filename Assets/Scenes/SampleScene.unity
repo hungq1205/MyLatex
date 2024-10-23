@@ -619,4 +619,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tmp: {fileID: 1586193022}
-  content: 56a&nbsp;
+  characterSpacing: 0.8
+  param: 0.3
+  update: 1
+  content: 45 1233 456
+  tInfo:
+    textComponent: {fileID: 0}
+    characterCount: 0
+    spriteCount: 0
+    spaceCount: 0
+    wordCount: 0
+    linkCount: 0
+    lineCount: 0
+    pageCount: 0
+    materialCount: 0

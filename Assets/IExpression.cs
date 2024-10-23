@@ -7,14 +7,14 @@ namespace Latex
     public interface IExpression
     {
         IExpression[] Content { get; }
-        bool Isolated { get; }
         Vector2 TopLeft { get; }
         Vector2 BottomRight { get; }
+        Vector2 BottomLeft => new Vector2(TopLeft.x, BottomRight.y);
 
         void Build(StringBuilder sb);
-        void Render(Latex latex);
-        void Transform(Latex latex, float scale);
-        void Transform(Latex latex, float scale, Vector2 offset);
+        void Render(Latex latex, IExpression preceeding = null);
+        void Transform(Latex latex, float scale, IExpression preceeding = null);
+        void Transform(Latex latex, float scale, Vector2 pos, float anchorCoef = 0f);
         void UpdateBound(Latex latex);
     }
 }
