@@ -9,6 +9,7 @@ namespace Latex
         IExpression[] Content { get; }
         Vector2 TopLeft { get; }
         Vector2 BottomRight { get; }
+        Vector2 TopRight => new Vector2(BottomRight.x, TopLeft.y);
         Vector2 BottomLeft => new Vector2(TopLeft.x, BottomRight.y);
 
         void Build(StringBuilder sb);

@@ -1,6 +1,3 @@
-using UnityEngine;
-using TMPro;
-
 namespace Latex
 {
     public class SquareRoot : ExpressionBase

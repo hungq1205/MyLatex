@@ -1,7 +1,6 @@
 using UnityEngine;
 using TMPro;
 using System.Text;
-using UnityEngine.UIElements;
 
 namespace Latex
 {
@@ -57,10 +56,11 @@ namespace Latex
         {
             if (Content != null)
             {
-                for (int i = 0; i < Content.Length; i++)
+                Content[0].Transform(latex, scale, pos, anchorCoef);
+                for (int i = 1; i < Content.Length; i++)
                 {
-                    Content[i].Transform(latex, scale, pos, anchorCoef);
-                    pos = Content[i].BottomRight;
+                    pos = Content[i - 1].BottomRight;
+                    Content[i].Transform(latex, scale, pos);
                 }
             }
             else
@@ -70,22 +70,27 @@ namespace Latex
 
         static void Transform(Latex latex, float scale, int startChar, int length)
         {
-            TMP_TextInfo tInfo = latex.tInfo;
-            TMP_CharacterInfo cInfo;
-            Vector3 anc = tInfo.characterInfo[0].bottomLeft;
-            Vector3[] vertices;
-            int vertIdx;
+            var tInfo = latex.tInfo;
+            var cInfo = tInfo.characterInfo[startChar];
+            var vertIdx = cInfo.vertexIndex;
+            var vertices = tInfo.meshInfo[cInfo.materialReferenceIndex].vertices;
+            var anc = vertices[vertIdx];
 
-            for (int c = startChar; c < startChar + length; c++)
+            var offset = vertices[vertIdx + 3].x - vertices[vertIdx + 1].x;
+            for (int i = 0; i < 4; i++)
+                vertices[vertIdx + i] = (vertices[vertIdx + i] - anc) * scale + anc;
+            anc.x += (offset + latex.characterSpacing) * scale;
+
+            for (int c = startChar + 1; c < startChar + length; c++)
             {
                 cInfo = tInfo.characterInfo[c];
                 vertIdx = cInfo.vertexIndex;
                 vertices = tInfo.meshInfo[cInfo.materialReferenceIndex].vertices;
 
-                var temp = vertices[vertIdx + 3].x - vertices[vertIdx + 1].x;
+                offset = vertices[vertIdx + 3].x - vertices[vertIdx + 1].x;
                 for (int i = 0; i < 4; i++)
-                    vertices[vertIdx + i] = (vertices[vertIdx + i] - vertices[vertIdx]) * scale + anc;
-                anc.x += (temp + latex.characterSpacing) * scale;
+                    vertices[vertIdx + i] = (vertices[vertIdx + i] - anc) * scale + anc;
+                anc.x += (offset + latex.characterSpacing) * scale;
             }
         }
 

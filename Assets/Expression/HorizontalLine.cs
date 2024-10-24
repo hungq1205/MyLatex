@@ -1,8 +1,5 @@
 using System.Text;
-using TMPro;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using UnityEngine.UIElements;
 
 namespace Latex
 {
