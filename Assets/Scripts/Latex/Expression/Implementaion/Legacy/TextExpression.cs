@@ -1,14 +1,13 @@
 using System.Text;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace Latex
 {
-    public class CharExpression : ExpressionBase
+    public class TextExpression : ExpressionBase
     {
-        public char value;
+        public string value;
 
-        public CharExpression(char content) : base()
+        public TextExpression(string content) : base()
         {
             value = content;
         }
@@ -24,8 +23,10 @@ namespace Latex
         {
             int vertIdx = latex.tInfo.characterInfo[StartChar].vertexIndex;
             var vertices = latex.tInfo.meshInfo[latex.tInfo.characterInfo[StartChar].materialReferenceIndex].vertices;
-
             topLeft = vertices[vertIdx + 1];
+
+            vertIdx = latex.tInfo.characterInfo[StartChar + Length - 1].vertexIndex;
+            vertices = latex.tInfo.meshInfo[latex.tInfo.characterInfo[StartChar + Length - 1].materialReferenceIndex].vertices;
             bottomRight = vertices[vertIdx + 3];
         }
     }
