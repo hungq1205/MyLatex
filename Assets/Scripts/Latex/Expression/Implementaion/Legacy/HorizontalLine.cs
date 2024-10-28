@@ -7,15 +7,16 @@ namespace Latex
     {
         const char HorizontalDash = '\u2500';
 
-        public float thickness, lpad, rpad;
-        IExpression[] lengthTrailing;
+        public float thickness, lpad, rpad, yOffset;
+        IExpression boundTracer;
 
-        public HorizontalLine(float thickness, float lpad = 0f, float rpad = 0f, params IExpression[] lengthTrailing) : base()
+        public HorizontalLine(IExpression boundTracer, float thickness, float yOffset = 0f, float lpad = 0f, float rpad = 0f) : base()
         {
             this.thickness = thickness;
             this.lpad = lpad;
             this.rpad = rpad;
-            this.lengthTrailing = lengthTrailing;
+            this.yOffset = yOffset;
+            this.boundTracer = boundTracer;
         }
 
         public override void Build(StringBuilder sb)
@@ -29,22 +30,34 @@ namespace Latex
         {
             RenderStart(latex, preceeding);
 
-            float lBound = float.PositiveInfinity, rBound = float.NegativeInfinity;
-            foreach (var ep in lengthTrailing)
-            {
-                if (ep.BottomRight.x > rBound) rBound = ep.BottomRight.x;
-                if (ep.TopLeft.x < lBound) lBound = ep.TopLeft.x;
-            }
-            lBound = lBound - lpad;
-            rBound = rBound + rpad;
+            float lBound = boundTracer.TopLeft.x - lpad;
+            float rBound = boundTracer.BottomRight.x + rpad;
 
             var vertIdx = latex.tInfo.characterInfo[StartChar].vertexIndex;
             var vertices = latex.tInfo.meshInfo[latex.tInfo.characterInfo[StartChar].materialReferenceIndex].vertices;
 
-            vertices[vertIdx].x     = lBound;
-            vertices[vertIdx + 1].x = lBound;
-            vertices[vertIdx + 2].x = rBound;
-            vertices[vertIdx + 3].x = rBound;
+            vertices[vertIdx] = new Vector2(lBound, vertices[vertIdx].y + yOffset);
+            vertices[vertIdx + 1] = new Vector2(lBound, vertices[vertIdx + 1].y + yOffset);
+            vertices[vertIdx + 2] = new Vector2(rBound, vertices[vertIdx + 2].y + yOffset);
+            vertices[vertIdx + 3] = new Vector2(rBound, vertices[vertIdx + 3].y + yOffset);
+
+            RenderEnd(latex, preceeding);
+        }
+
+        public void Render(Latex latex, float start, float end, IExpression preceeding = null)
+        {
+            RenderStart(latex, preceeding);
+
+            float lBound = start;
+            float rBound = end;
+
+            var vertIdx = latex.tInfo.characterInfo[StartChar].vertexIndex;
+            var vertices = latex.tInfo.meshInfo[latex.tInfo.characterInfo[StartChar].materialReferenceIndex].vertices;
+
+            vertices[vertIdx] = new Vector2(lBound, vertices[vertIdx].y + yOffset);
+            vertices[vertIdx + 1] = new Vector2(lBound, vertices[vertIdx + 1].y + yOffset);
+            vertices[vertIdx + 2] = new Vector2(rBound, vertices[vertIdx + 2].y + yOffset);
+            vertices[vertIdx + 3] = new Vector2(rBound, vertices[vertIdx + 3].y + yOffset);
 
             RenderEnd(latex, preceeding);
         }

@@ -529,7 +529,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u221Ax0\u2500"
+  m_text: "2H2++O2\u2500\u2192to2H2+O"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -619,13 +619,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tmp: {fileID: 1586193022}
-  content: \sqrt{x_{0}}
+  content: 2H_{2}^{+}+O_{2}\rightarrow{t^{o}}2H_{2}^{+}O
   tInfo:
     textComponent: {fileID: 1586193022}
-    characterCount: 4
+    characterCount: 16
     spriteCount: 0
     spaceCount: 0
-    wordCount: 2
+    wordCount: 4
     linkCount: 0
     lineCount: 1
     pageCount: 1

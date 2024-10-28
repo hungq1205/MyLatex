@@ -18,8 +18,10 @@ namespace Latex
             Content = new IExpression[] {
                 new CharExpression(SqrtChar),
                 content[0],
-                new HorizontalLine(1f, PadL, PadR, content[0]),
+                new HorizontalLine(content[0], 1f, PadL, PadR),
             };
+            Content[0].SpacingRight = 0f;
+            Content[1].SpacingLeft = 0f;
         }
 
         public override void Render(Latex latex, IExpression preceeding = null)

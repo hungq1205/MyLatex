@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Text;
 using UnityEngine.UIElements;
+using Unity.VisualScripting;
 
 namespace Latex
 {
@@ -12,8 +13,8 @@ namespace Latex
         public int Length { get; protected set; }
 
         public float Scale { get; protected set; } = 1f;
-        public float SpacingLeft { get; protected set; } = 5f;
-        public float SpacingRight { get; protected set; } = 5f;
+        public float SpacingLeft { get; set; } = 5f;
+        public float SpacingRight { get; set; } = 5f;
         public float Baseline { get; protected set; }
 
         protected Vector2 topLeft;
@@ -34,7 +35,7 @@ namespace Latex
 
         protected void RenderStart(Latex latex, IExpression preceeding = null)
         {
-            if (StartChar < 0 || Length < 0)
+            if (StartChar < 0 || Length <= 0)
                 throw new System.Exception("Expression has not been built");
             Baseline = latex.tInfo.characterInfo[StartChar].baseLine;
         }
@@ -48,6 +49,7 @@ namespace Latex
         {
             RenderStart(latex, preceeding);
             RenderEnd(latex, preceeding);
+            Transform(latex, 1f, preceeding);
         }
 
         public virtual void Transform(Latex latex, float scale, IExpression preceeding = null, IExpression baseEp = null)
@@ -58,7 +60,7 @@ namespace Latex
             if (preceeding == null)
                 pos = new Vector2(TopLeft.x, Baseline);
             else
-                pos = new Vector2(preceeding.BottomRight.x, preceeding.Baseline);
+                pos = new Vector2(preceeding.BottomRight.x + preceeding.SpacingRight + SpacingLeft, preceeding.Baseline);
 
             if (Content != null)
             {
@@ -146,6 +148,34 @@ namespace Latex
                 for (int i = 0; i < 4; i++)
                     vertices[vertIdx + i] = (vertices[vertIdx + i] - oldAnchor) * scale + pos3;
             }
+        }
+
+        public static void HorizontalAlign(Latex latex, IExpression ep, IExpression bound, float epAnchorCoef = 0.5f, float boundAnchorCoef = 0.5f)
+        {
+            float xPos = bound.TopLeft.x + (bound.BottomRight.x - bound.TopLeft.x) * boundAnchorCoef - (ep.BottomRight.x - ep.TopLeft.x) * epAnchorCoef;
+            UnityEngine.Vector2 pos = new(xPos, ep.Baseline);
+            ep.Transform(latex, 1f, pos);
+        }
+
+        public static void VerticalAlign(Latex latex, IExpression ep, IExpression bound, float epAnchorCoef = 0.5f, float boundAnchorCoef = 0.5f)
+        {
+            float yPos = bound.BottomRight.y + (bound.TopLeft.y - bound.BottomRight.y) * boundAnchorCoef;
+            UnityEngine.Vector2 pos = new(ep.TopLeft.x, yPos);
+            ep.Transform(latex, 1f, pos, epAnchorCoef);
+        }
+
+        public static void HorizontalAlign(Latex latex, IExpression ep, float start, float end, float epAnchorCoef = 0.5f, float boundAnchorCoef = 0.5f)
+        {
+            float xPos = start + (end - start) * boundAnchorCoef - (ep.BottomRight.x - ep.TopLeft.x) * epAnchorCoef;
+            UnityEngine.Vector2 pos = new(xPos, ep.Baseline);
+            ep.Transform(latex, 1f, pos);
+        }
+
+        public static void VerticalAlign(Latex latex, IExpression ep, float start, float end, float epAnchorCoef = 0.5f, float boundAnchorCoef = 0.5f)
+        {
+            float yPos = start + (end - start) * boundAnchorCoef;
+            UnityEngine.Vector2 pos = new(ep.TopLeft.x, yPos);
+            ep.Transform(latex, 1f, pos, epAnchorCoef);
         }
 
         public virtual void UpdateBound(Latex latex)

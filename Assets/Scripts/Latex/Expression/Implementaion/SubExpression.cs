@@ -5,6 +5,8 @@ namespace Latex
     {
         const float Scaler = 0.5f;
 
+        public IExpression preceeding;
+
         public SubExpression(params IExpression[] content) : base()
         {
             if (content.Length != 1)
@@ -12,17 +14,20 @@ namespace Latex
 
             Content = new []{ content[0] };
             SpacingRight = 0;
-            SpacingLeft = 1.5f;
+            SpacingLeft = 1f;
         }
 
         public override void Render(Latex latex, IExpression preceeding = null)
         {
+            if (preceeding is SupExpression sup)
+                preceeding = sup.preceeding;
+            this.preceeding = preceeding;
+
             RenderStart(latex, preceeding);
 
             Scale = preceeding.Scale * Scaler;
             Content[0].Render(latex);
-            RenderEnd(latex, preceeding);
-            Content[0].Transform(latex, Scale, preceeding.BottomRight, 0.5f);
+            Content[0].Transform(latex, Scale, preceeding.BottomRight + UnityEngine.Vector2.right * (preceeding.SpacingRight + SpacingLeft), 0.5f);
 
             RenderEnd(latex, preceeding);
         }

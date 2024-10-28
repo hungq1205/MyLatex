@@ -11,8 +11,8 @@ namespace Latex
         int Length { get; }
 
         float Scale { get; }
-        float SpacingLeft { get; }
-        float SpacingRight { get; }
+        float SpacingLeft { get; set; }
+        float SpacingRight { get; set; }
         float Baseline { get; }
         Vector2 TopLeft { get; }
         Vector2 BottomRight { get; }

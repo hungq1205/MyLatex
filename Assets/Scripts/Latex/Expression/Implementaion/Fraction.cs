@@ -7,22 +7,25 @@ namespace Latex
     {
         const float ExpressionScaler = 0.75f;
         const float ExpressionSpacing = 12f;
-        const float ExpressionOffset = 1.5f;
+        const float ExpressionOffset = 3f;
         const float DividerAnchorCoef = 0.6f;
         const float Pad = 12f;
+
+        BoundAggregator boundTracer;
 
         public Fraction(params IExpression[] content) : base()
         {
             if (content.Length != 2)
                 throw new System.Exception("Invalid expression numbers for " + GetType());
 
+            boundTracer = new BoundAggregator(true, content[0], content[1]);
+            Content = new IExpression[] {
+                content[0],
+                content[1],
+                new HorizontalLine(boundTracer, 1f, Pad, Pad),
+            };
             SpacingLeft += 5f;
             SpacingRight += 5f;
-            Content = new IExpression[] {
-                content[0], 
-                content[1],
-                new HorizontalLine(1f, Pad, Pad, content[0], content[1]),
-            };
         }
 
         public override void Render(Latex latex, IExpression preceeding = null)
@@ -35,7 +38,7 @@ namespace Latex
             else
             {
                 anchor = Content[0].Position;
-                anchor.x = preceeding.BottomRight.x;
+                anchor.x = preceeding.BottomRight.x + preceeding.SpacingRight + SpacingLeft;
             }
 
             Content[0].Render(latex);
@@ -44,7 +47,11 @@ namespace Latex
             Content[1].Render(latex);
             Content[1].Transform(latex, ExpressionScaler, new Vector2(anchor.x, anchor.y - ExpressionSpacing - ExpressionOffset), 1);
 
-            Content[2].Render(latex);
+            boundTracer.Render(latex);
+            Content[2].Render(latex, preceeding);
+
+            HorizontalAlign(latex, Content[0], boundTracer);
+            HorizontalAlign(latex, Content[1], boundTracer);
 
             RenderEnd(latex, preceeding);
         }

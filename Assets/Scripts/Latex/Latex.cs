@@ -2,15 +2,14 @@ using UnityEngine;
 using TMPro;
 using System.Text;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Latex
 {
     public class Latex : MonoBehaviour
     {
         public TextMeshProUGUI tmp;
-        //[Range(-100f, 100f)] public float param = 5f;
-        //[Range(-100f, 100f)] public float param2 = 5f;
+        //[Range(0, 1f)] public float param = 1f;
+        //[range(-100f, 100f)] public float param2 = 5f;
         [TextArea(5, 1000)] public string content;
 
         [HideInInspector] public TMP_TextInfo tInfo;
@@ -40,6 +39,9 @@ namespace Latex
             tmp.ForceMeshUpdate();
 
             ep.Render(this);
+
+            var rTransform = (RectTransform)transform;
+            ExpressionBase.HorizontalAlign(this, ep, rTransform.rect.xMin, rTransform.rect.xMax);
 
             tmp.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
         }
@@ -160,6 +162,9 @@ namespace Latex
             {
                 if (childs != null)
                 {
+                    if (childs.Count == 1 && childs.First.Value.context == "\\group")
+                        return Utility.InstantiateExpression(context, new[] { childs.First.Value.Build() });
+
                     List<IExpression> childBuilds = new();
                     foreach (var c in childs)
                         childBuilds.Add(c.Build());
