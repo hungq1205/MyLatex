@@ -8,8 +8,8 @@ namespace Latex
         const float ExpressionScaler = 0.75f;
         const float ExpressionSpacing = 12f;
         const float ExpressionOffset = 3f;
-        const float DividerAnchorCoef = 0.6f;
-        const float Pad = 12f;
+        const float DividerOffsetY = 1f;
+        const float Pad = 18f;
 
         BoundAggregator boundTracer;
 
@@ -22,7 +22,7 @@ namespace Latex
             Content = new IExpression[] {
                 content[0],
                 content[1],
-                new HorizontalLine(boundTracer, 1f, Pad, Pad),
+                new HorizontalLine(boundTracer, 1f, DividerOffsetY, Pad, Pad),
             };
             SpacingLeft += 5f;
             SpacingRight += 5f;

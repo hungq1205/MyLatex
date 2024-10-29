@@ -9,7 +9,7 @@ namespace Latex
     {
         public TextMeshProUGUI tmp;
         //[Range(0, 1f)] public float param = 1f;
-        //[range(-100f, 100f)] public float param2 = 5f;
+        [Range(-100f, 100f)] public float param = 5f;
         [TextArea(5, 1000)] public string content;
 
         [HideInInspector] public TMP_TextInfo tInfo;

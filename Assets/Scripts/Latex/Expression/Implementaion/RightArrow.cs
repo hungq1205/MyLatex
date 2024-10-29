@@ -4,8 +4,7 @@ namespace Latex
     public class RightArrow : ExpressionBase
     {
         const char Symbol = '\u2192';
-        const float SymbolScaler = 1.4f;
-        const float yOffset = -4.1f;
+        const float yOffset = 0f;
         const float UpperScaler = 0.45f;
 
         public float length;
@@ -42,7 +41,7 @@ namespace Latex
             ((HorizontalLine)Content[0]).Render(latex, start, start + 60f);
 
             Content[1].Render(latex);
-            Content[1].Transform(latex, SymbolScaler, Content[0]);
+            Content[1].Transform(latex, 1f, Content[0]);
             
             if (Content.Length > 2)
             {

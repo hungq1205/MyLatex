@@ -529,10 +529,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "2H2++O2\u2500\u2192to2H2+O"
+  m_text: "\u221A4234\u2500ex\u2500\u2500\u2192to\u221A34-24\u2500"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a96139d2fed5f9547aa616f7402a713f, type: 2}
+  m_sharedMaterial: {fileID: -5869032383552717736, guid: a96139d2fed5f9547aa616f7402a713f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -619,14 +619,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tmp: {fileID: 1586193022}
-  content: 2H_{2}^{+}+O_{2}\rightarrow{t^{o}}2H_{2}^{+}O
+  param: 11
+  content: \frac{\sqrt{4234}}{e^{x}}\rightarrow{t^{o}}\sqrt{34-24}
   tInfo:
     textComponent: {fileID: 1586193022}
-    characterCount: 16
+    characterCount: 20
     spriteCount: 0
     spaceCount: 0
-    wordCount: 4
+    wordCount: 5
     linkCount: 0
     lineCount: 1
     pageCount: 1
-    materialCount: 2
+    materialCount: 1

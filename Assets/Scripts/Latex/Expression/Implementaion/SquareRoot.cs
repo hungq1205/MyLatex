@@ -5,8 +5,8 @@ namespace Latex
     {
         const char SqrtChar = '\u221A';
         const float SqrtSymbolScaler = 1.1f;
-        const float PadL = 5.8f, PadR = 11f;
-        static readonly UnityEngine.Vector2 Offset = new(-PadL, -3f);
+        const float PadL = 8f, PadR = 10f;
+        static readonly UnityEngine.Vector2 Offset = new(-PadL - 0.5f, -5f);
 
         public float rPad, lPad;
 
@@ -18,7 +18,7 @@ namespace Latex
             Content = new IExpression[] {
                 new CharExpression(SqrtChar),
                 content[0],
-                new HorizontalLine(content[0], 1f, PadL, PadR),
+                new HorizontalLine(content[0], 1f, 0, PadL, PadR),
             };
             Content[0].SpacingRight = 0f;
             Content[1].SpacingLeft = 0f;
