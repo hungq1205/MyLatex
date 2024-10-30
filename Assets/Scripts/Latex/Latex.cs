@@ -125,10 +125,15 @@ namespace Latex
 
                     epSb.Clear();
                 }
-                else if (text[i] == ' ' && notified)
+                else if (text[i] == ' ')
                 {
-                    traces.Peek().childs.AddLast(new ExpressionNode(epSb.ToString()));
-                    epSb.Clear();
+                    if (notified)
+                    {
+                        traces.Peek().childs.AddLast(new ExpressionNode(epSb.ToString()));
+                        epSb.Clear();
+                    }
+                    else
+                        epSb.Append('\u00A0');
                 }
                 else
                     epSb.Append(text[i]);

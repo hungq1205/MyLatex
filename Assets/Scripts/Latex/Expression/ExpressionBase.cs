@@ -102,23 +102,7 @@ namespace Latex
 
         static void TransformText(Latex latex, IExpression ep, IExpression baseEp, float scale)
         {
-            var tInfo = latex.tInfo;
-            var cInfo = tInfo.characterInfo[ep.StartChar];
-            var vertIdx = cInfo.vertexIndex;
-            var vertices = tInfo.meshInfo[cInfo.materialReferenceIndex].vertices;
-            Vector3 anc = baseEp.Position;
-
-            for (int i = 0; i < 4; i++)
-                vertices[vertIdx + i] = (vertices[vertIdx + i] - anc) * scale + anc;
-
-            for (int c = ep.StartChar + 1; c < ep.StartChar + ep.Length; c++)
-            {
-                cInfo = tInfo.characterInfo[c];
-                vertIdx = cInfo.vertexIndex;
-
-                for (int i = 0; i < 4; i++)
-                    vertices[vertIdx + i] = (vertices[vertIdx + i] - anc) * scale + anc;
-            }
+            TransformText(latex, ep, baseEp, scale, baseEp.Position);
         }
 
         static void TransformText(Latex latex, IExpression ep, IExpression baseEp, float scale, Vector2 pos)
@@ -137,16 +121,19 @@ namespace Latex
 
             Vector3 oldAnchor = baseEp.BottomLeft;
             oldAnchor.y += (baseEp.TopLeft.y - baseEp.BottomRight.y) * anchorCoef;
-            for (int i = 0; i < 4; i++)
-                vertices[vertIdx + i] = (vertices[vertIdx + i] - oldAnchor) * scale + pos3;
+            if (cInfo.character != ' ')
+                for (int i = 0; i < 4; i++)
+                     vertices[vertIdx + i] = (vertices[vertIdx + i] - oldAnchor) * scale + pos3;
 
             for (int c = ep.StartChar + 1; c < ep.StartChar + ep.Length; c++)
             {
                 cInfo = tInfo.characterInfo[c];
                 vertIdx = cInfo.vertexIndex;
 
-                for (int i = 0; i < 4; i++)
-                    vertices[vertIdx + i] = (vertices[vertIdx + i] - oldAnchor) * scale + pos3;
+                Debug.Log(cInfo.character + ": " + vertIdx);
+                if (cInfo.character != ' ')
+                    for (int i = 0; i < 4; i++)
+                        vertices[vertIdx + i] = (vertices[vertIdx + i] - oldAnchor) * scale + pos3;
             }
         }
 

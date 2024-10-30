@@ -6,7 +6,7 @@ namespace Latex
         const char SqrtChar = '\u221A';
         const float SqrtSymbolScaler = 1.1f;
         const float PadL = 8f, PadR = 10f;
-        static readonly UnityEngine.Vector2 Offset = new(-PadL - 0.5f, -5f);
+        static readonly UnityEngine.Vector2 Offset = new(-PadL, -6f);
 
         public float rPad, lPad;
 
