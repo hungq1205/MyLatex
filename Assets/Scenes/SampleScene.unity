@@ -529,7 +529,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u221A4234\u2500ex\u2500\u2500\u2192to\u221A34-24\u2500"
+  m_text: 9875438
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a96139d2fed5f9547aa616f7402a713f, type: 2}
   m_sharedMaterial: {fileID: -5869032383552717736, guid: a96139d2fed5f9547aa616f7402a713f, type: 2}
@@ -620,13 +620,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tmp: {fileID: 1586193022}
   param: 11
-  content: \frac{\sqrt{4234}}{e^{x}}\rightarrow{t^{o}}\sqrt{34-24}
+  content: 98^75 438
   tInfo:
     textComponent: {fileID: 1586193022}
-    characterCount: 20
+    characterCount: 7
     spriteCount: 0
     spaceCount: 0
-    wordCount: 5
+    wordCount: 1
     linkCount: 0
     lineCount: 1
     pageCount: 1

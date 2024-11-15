@@ -8,6 +8,8 @@ namespace Latex
     {
         public const char EscapeChar = '\\';
 
+        public static readonly HashSet<char> quickParamNotifiers = new(new[] { '^', '_' });
+
         private static Dictionary<string, ConstructorInfo> expressionConstructors;
         public static Dictionary<string, ConstructorInfo> ExpressionConstructors
         {

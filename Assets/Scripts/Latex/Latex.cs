@@ -54,13 +54,14 @@ namespace Latex
             StringBuilder epSb = new();
             string text = content;
 
-            bool escape = false, notified = false;
+            bool escape = false, notified = false, quickParam = false;
             for (int i = 0; i < text.Length; i++)
             {
                 if (escape)
                 {
                     if (text[i] == Utility.EscapeChar || 
                         text[i] == '{' || text[i] == '}' ||
+                        text[i] == '(' || text[i] == ')' ||
                         Utility.Notifiers.Contains(text[i]))
                     {
                         epSb.Append(text[i]);
@@ -88,55 +89,87 @@ namespace Latex
                     continue;
                 }
 
+                ExpressionNode node;
                 if (Utility.Notifiers.Contains(text[i]))
                 {
-                    notified = true;
                     if (epSb.Length > 0)
                     {
                         traces.Peek().childs.AddLast(new ExpressionNode(epSb.ToString(), true));
                         epSb.Clear();
                     }
                     epSb.Append(text[i]);
-                    continue;  
-                }
-
-                if (text[i] == '{')
-                {
-                    ExpressionNode node;
-                    if (notified)
+                    if (Utility.quickParamNotifiers.Contains(text[i]) &&
+                        text.Length > i + 1 &&
+                        !Utility.Notifiers.Contains(text[i + 1]) &&
+                        text[i + 1] != '{')
                     {
                         node = new ExpressionNode(epSb.ToString());
                         traces.Peek().childs.AddLast(node);
                         traces.Push(node);
-                        notified = false;
-                    }
-                    node = new ExpressionNode("\\group");
-                    traces.Peek().childs.AddLast(node);
-                    traces.Push(node);
-                    epSb.Clear();
-                }
-                else if (text[i] == '}') 
-                {
-                    if (epSb.Length > 0)
-                        traces.Peek().childs.AddLast(new ExpressionNode(epSb.ToString(), true));
-                    if (i + 1 >= text.Length || text[i + 1] != '{')
-                        traces.Pop();
-                    traces.Pop();
-
-                    epSb.Clear();
-                }
-                else if (text[i] == ' ')
-                {
-                    if (notified)
-                    {
-                        traces.Peek().childs.AddLast(new ExpressionNode(epSb.ToString()));
                         epSb.Clear();
+                        quickParam = true;
                     }
                     else
-                        epSb.Append('\u00A0');
+                        notified = true;
+                    continue;  
                 }
-                else
-                    epSb.Append(text[i]);
+
+                switch (text[i])
+                {
+                    case '{':
+                        if (notified)
+                        {
+                            node = new ExpressionNode(epSb.ToString());
+                            traces.Peek().childs.AddLast(node);
+                            traces.Push(node);
+                            notified = false;
+                        }
+                        node = new ExpressionNode("\\group");
+                        traces.Peek().childs.AddLast(node);
+                        traces.Push(node);
+                        epSb.Clear();
+                        break;
+                    case '}':
+                        if (epSb.Length > 0)
+                            traces.Peek().childs.AddLast(new ExpressionNode(epSb.ToString(), true));
+                        if (i + 1 >= text.Length || text[i + 1] != '{')
+                            traces.Pop();
+                        traces.Pop();
+
+                        epSb.Clear();
+                        break;
+                    case '(':
+                        node = new ExpressionNode("\\group");
+                        traces.Peek().childs.AddLast(node);
+                        traces.Push(node);
+                        epSb.Clear();
+                        break;
+                    case ')':
+                        if (epSb.Length > 0)
+                            traces.Peek().childs.AddLast(new ExpressionNode(epSb.ToString(), true));
+                        traces.Pop();
+                        epSb.Clear();
+                        break;
+                    case ' ':
+                        if (notified)
+                        {
+                            traces.Peek().childs.AddLast(new ExpressionNode(epSb.ToString()));
+                            epSb.Clear();
+                        }
+                        else if (quickParam)
+                        {
+                            traces.Peek().childs.AddLast(new ExpressionNode(epSb.ToString(), true));
+                            traces.Pop();
+                            epSb.Clear();
+                            quickParam = false;
+                        }
+                        else
+                            epSb.Append('\u00A0');
+                        break;
+                    default:
+                        epSb.Append(text[i]);
+                        break;
+                }
             }
             if (epSb.Length > 0)
                 traces.Peek().childs.AddLast(new ExpressionNode(epSb.ToString(), true));
